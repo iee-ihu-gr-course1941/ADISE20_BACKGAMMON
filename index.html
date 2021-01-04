@@ -5,44 +5,309 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>ΑΔΙΣΕ: Σκακι 4</title>
+    <title></title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/bootstrap.min.css" rel="stylesheet">
-	<link href="css/mychess.css" rel="stylesheet">
+	<!-- το CSS μας -->
+	<link href="css/mytavli.css" rel="stylesheet">
 	<script src="bootstrap/jquery-3.2.1.min.js"></script>
     <script src="bootstrap/bootstrap.min.js"></script>
-	<script src="js/mychess.js"></script>
+	
     <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
 	<link href="jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+		<!-- το αρχείο javascipt μας -->
+        <script src="js/mytavli.js"></script>
+        <script>
+		// με το που φορτώνεται η σελίδα εκτελούνται 
+            $( document ).ready(function() {
+                // κρύβουμε τις πληροφορίες του παιχνιδιού
+                $("#game_info").hide();
+				// κρύβουμε τις πιθανές κινήσεις
+				$("#move_div").hide();
+				// κρύβουμε τα select που επιλέγει ο παίκτης από που και που θα κάνει την μετακίνηση
+                $(".from").hide();
+                $(".to").hide();
+            });
+        </script>
   </head>
 <body>
-<h1>ΣΚΑΚΙ</h1>
-<div id='chess_board'>
-</div>
-<br/>
-<div id='game_initializer'>
-<input id='username'> 
-<select id='pcolor'>
-<option value='W'>W</option>
-<option value='B'>B</option>
-</select>
-<button id='chess_login' class='btn btn-primary'>ΕΙΣΟΔΟΣ ΣΤΟ ΠΑΙΧΝΙΔΙ</button><br>
-</div>
-<div id='game_info'>
-</div>
-<div id='move_div'>
-Δώσε κίνηση (x1 y1 x2 y2): <input id='the_move'>  <button id='do_move' class='btn btn-primary'>ΚΑΝΕ ΤΗΝ ΚΙΝΗΣΗ</button><br>
-<br><br>
-Δώσε κίνηση (x1 y1): <input id='the_move_src'> (x2 y2):
-<select id='the_move_dest'></select>
-<button id='do_move2' class='btn btn-primary'>ΚΑΝΕ ΤΗΝ ΚΙΝΗΣΗ 2</button><br>
-</div>
+<div class="card text-center">
+	<!-- ο τίτλος -->
+	<div class="card-header">
+		<h1>Τάβλι - Φεύγα</h1>
+	</div>
+	<div class="card-body">
+		<!-- το ταμπλό -->
+		<div id='tavli_board'>
+		</div>
+		<br/>
+		<!-- τα σημεία που βάζουμε τον χρήστη μας -->
+		<div id='game_initializer'>
+			<!-- το username του χρήστη μας -->
+			<input id='username' class="form-control" type="text" style="width:40%;display:inline-block"> 
+			<!-- επιλογή dropdown χρώμα πιονιών -->
+			<select id='pcolor'  class="custom-select">
+				<option value='W'>Λευκό</option>
+				<option value='B'>Μαύρο</option>
+			</select>
+			<!-- πατιέται το κουμπί για είσοδο στο παιχνίδι -->
+			<button id='tavli_login' class='btn btn-success'>ΕΙΣΟΔΟΣ ΣΤΟ ΠΑΙΧΝΙΔΙ</button>
+			<br>
+		</div>
+		<!-- εμφανίζει πληροφορίες για το παιχνίδι -->
+		<div id='game_info' class="blockquote">
+		<br>
+		
+		</div>
+	<!-- τα ζάρια και το μέρος για την επιλογή κινήσεων -->
+	<div id='move_div'>
+		<!-- τα ζάρια -->
+		<div id="zaria">
+			<button class='btn btn-primary' onclick="zaria()">ΖΑΡΙΑ</button>
+		</div>
+		<!-- το μέρος για την επιλογή κινήσεων -->
+		<div>
+			<!-- κίνηση για το πρώτο ζάρι -->
+			<div id="move1">
+				<button id="zari1" onclick="go_move(1)"></button>
+				
+				<!--επιλογή από που θα μετακινήσουμε πούλι -->
+				<div class="from">
+					
+					<!--επιλογή από πλευράς -->
+					<select id="sideFrom1" class="custom-select">
+						<option value="-">-</option>
+						<option value="B">Μαύρο</option>
+						<option value="W">Λευκό</option>
+					</select>
+					<!--επιλογή από αριθμού θέσης -->
+					<select id="numberFrom1" class="custom-select">
+						<option value="0">-</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="0">ΕΞΩ</option>
+					</select>
+				</div>
+				<!--επιλογή σε ποια θέση θα μετακινήσουμε πούλι -->
+				<div class="to">
+					<!--επιλογή σε πλευράς -->
+					<select id="sideTo1" class="custom-select">	
+						<option value="-">-</option>
+						<option value="B">Μαύρο</option>
+						<option value="W">Λευκό</option>
+					</select>
+					<!--επιλογή σε αριθμού θέσης -->
+					<select id="numberTo1" class="custom-select">
+						<option value="0">-</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="0">ΕΞΩ</option>
+					</select>
+				</div>
+			</div>
+			<!-- κίνηση για το δεύτερο ζάρι -->
+			<div id="move2">
+				<button id="zari2"  onclick="go_move(2)"></button>
+				<!--επιλογή από που θα μετακινήσουμε πούλι -->
+				<div class="from">
+					<!--επιλογή από πλευράς -->
+					<select id="sideFrom2" class="custom-select">
+						<option value="-">-</option>
+						<option value="B">Μαύρο</option>
+						<option value="W">Λευκό</option>
+					</select>
+					<!--επιλογή από αριθμού θέσης -->
+					<select id="numberFrom2" class="custom-select">
+						<option value="0">-</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="0">ΕΞΩ</option>
+					</select>
+				</div>
+				<!--επιλογή σε ποια θέση θα μετακινήσουμε πούλι -->
+				<div class="to">
+					<!--επιλογή σε πλευράς -->
+					<select id="sideTo2" class="custom-select">
+						<option value="-">-</option>
+						<option value="B">Μαύρο</option>
+						<option value="W">Λευκό</option>
+					</select>
+					<!--επιλογή σε αριθμού θέσης -->
+					<select id="numberTo2" class="custom-select">
+						<option value="0">-</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="0">ΕΞΩ</option>
+					</select>
+				</div>
+			</div>
+			<!-- κίνηση για το τρίτο ζάρι -->
+			<div id="move3">
+				<button id="zari3"  onclick="go_move(3)"></button>
+				<!--επιλογή από που θα μετακινήσουμε πούλι -->
+				<div class="from">
+					<!--επιλογή από πλευράς -->
+					<select id="sideFrom3" class="custom-select">
+						<option value="-">-</option>
+						<option value="B">Μαύρο</option>
+						<option value="W">Λευκό</option>
+					</select>
+					<!--επιλογή από αριθμού θέσης -->
+					<select id="numberFrom3" class="custom-select">
+						<option value="0">-</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="0">ΕΞΩ</option>
+					</select>
+				</div>
+				<!--επιλογή σε ποια θέση θα μετακινήσουμε πούλι -->
+				<div class="to">
+					<!--επιλογή σε πλευράς -->
+					<select id="sideTo3" class="custom-select">
+						<option value="-">-</option>
+						<option value="B">Μαύρο</option>
+						<option value="W">Λευκό</option>
+					</select>
+					<!--επιλογή σε αριθμού θέσης -->
+					<select id="numberTo3" class="custom-select">
+						<option value="0">-</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="0">ΕΞΩ</option>
+					</select>
+				</div>
+			</div>
+			<!-- κίνηση για το τέταρτο ζάρι -->
+			<div id="move4">
+				<button id="zari4"  onclick="go_move(4)"></button>
+				<!--επιλογή από που θα μετακινήσουμε πούλι -->
+				<div class="from" class="custom-select">
+					<!--επιλογή από πλευράς -->
+					<select id="sideFrom4" class="custom-select">
+						<option value="-">-</option>
+						<option value="B">Μαύρο</option>
+						<option value="W">Λευκό</option>
+					</select>
+					<!--επιλογή από αριθμού θέσης -->
+					<select id="numberFrom4" class="custom-select">
+						<option value="0">-</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="0">ΕΞΩ</option>
+					</select>
+				</div>
+				<!--επιλογή σε ποια θέση θα μετακινήσουμε πούλι -->
+				<div class="to">
+					<!--επιλογή σε πλευράς -->
+					<select id="sideTo4" class="custom-select">
+						<option value="-">-</option>
+						<option value="B">Μαύρο</option>
+						<option value="W">Λευκό</option>
+					</select>
+					<!--επιλογή σε αριθμού θέσης -->
+					<select id="numberTo4" class="custom-select">
+						<option value="0">-</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="0">ΕΞΩ</option>
+					</select>
+					<!-- πατάμε για επιβεβαίωση κίνησης -->
+					<button id='do_move' 		class='btn btn-primary'>ΚΑΝΕ ΤΗΝ ΚΙΝΗΣΗ</button><br>
+				</div>
+			</div>
+        
+		
+		</div>
+	</div>
+	</div>
+	<div class="card-footer">
+	<!-- το κουμπί για να ξεκινήσουμε, για να ξαναξεκινήσουμε και για να τερματίσουμε ένα παιχνίδι  -->
+		<button id='tavli_reset' 	class='btn btn-info'>ΕΝΑΡΞΗ/RESET</button><button id='tavli_end' 	class='btn btn-danger'>ΤΕΛΟΣ</button><br>
 
-<br/><br/>
+	</div>
+	</div>
 
-
-<button id='chess_reset' class='btn btn-primary'>ΕΝΑΡΞΗ/RESET</button><br>
 
 
 </body>
