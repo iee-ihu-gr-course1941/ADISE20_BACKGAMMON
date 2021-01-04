@@ -1,0 +1,110 @@
+body {
+	margin : 10px;
+	padding : 5px;
+	font-family: verdana, tahoma, arial;
+	color: #555;
+}
+
+#tavli_table TD {width: 3em; height:9em;border:1px solid black;text-align:center;}
+#tavli_table {border-collapse: collapse;}
+#tavli_table td.number {background:orange;color:white;width: 3em; height:1em;}
+TD#B_square_0 {background-color:#555;color:#bbb}
+TD#W_square_0 {background-color:#bbb;color:#555}
+
+TD#B_square_1 {background-color:#663300;color:#bbb}
+TD#W_square_1 {background-color:burlywood;color:#555}
+TD#B_square_2 {background-color:#663300;color:#bbb}
+TD#W_square_2 {background-color:burlywood;color:#555}
+TD#B_square_3 {background-color:#663300;color:#bbb}
+TD#W_square_3 {background-color:burlywood;color:#555}
+TD#B_square_4 {background-color:#663300;color:#bbb}
+TD#W_square_4 {background-color:burlywood;color:#555}
+TD#B_square_5 {background-color:#663300;color:#bbb}
+TD#W_square_5 {background-color:burlywood;color:#555}
+TD#B_square_6 {background-color:#663300;color:#bbb}
+TD#W_square_6 {background-color:burlywood;color:#555}
+TD#B_square_7 {background-color:#663300;color:#bbb}
+TD#W_square_7 {background-color:burlywood;color:#555}
+TD#B_square_8 {background-color:#663300;color:#bbb}
+TD#W_square_8 {background-color:burlywood;color:#555}
+TD#B_square_9 {background-color:#663300;color:#bbb}
+TD#W_square_9 {background-color:burlywood;color:#555}
+TD#B_square_10 {background-color:#663300;color:#bbb}
+TD#W_square_10 {background-color:burlywood;color:#555}
+TD#B_square_11 {background-color:#663300;color:#bbb}
+TD#W_square_11 {background-color:burlywood;color:#555}
+TD#B_square_12 {background-color:#663300;color:#bbb}
+TD#W_square_12 {background-color:burlywood;color:#555}
+
+TD.W_square {background-color:#FFF;}
+IMG.piece {width: 2.1em; height:2.8em;}
+TD.pmove {border:3px solid blue; background-color:yellow;}
+TD.tomove {border:3px solid blue; background-color:blue;}
+
+div#game_info{
+    display : block;
+    height : auto;
+    min-height : 60px;
+}
+div#zaria{
+    display : block;
+    height : auto;
+}
+button#zari1{
+    display : inline-block;
+    width :50px;
+    height : 50px;
+	background-color: white;
+	border: black outset 1px;
+	border-radius:4px;
+	color : black;
+	font-weight:bold;
+	padding : 3px;
+}
+button#zari2{
+    display : inline-block;
+    width :50px;
+    height : 50px;
+	background-color: white;
+	border: black outset 1px;
+	border-radius:4px;
+	color : black;
+	font-weight:bold;
+	padding : 3px;
+}
+button#zari3{
+    display : inline-block;
+    width :50px;
+    height : 50px;
+	background-color: white;
+	border: black outset 1px;
+	border-radius:4px;
+	color : black;
+	font-weight:bold;
+	padding : 3px;
+}
+button#zari4{
+    display : inline-block;
+    width :50px;
+    height : 50px;
+	background-color: white;
+	border: black outset 1px;
+	border-radius:4px;
+	color : black;
+	font-weight:bold;
+	padding : 3px;
+}
+div#tavli_board{
+	padding-left:10%;
+	text-align:center;
+}
+div.from{
+    width : 40%;
+    display : inline-block;
+    height : 80px;
+}
+div.to{
+    width : 40%;
+    display : inline-block;
+    height : 80px;
+}
