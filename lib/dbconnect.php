@@ -1,10 +1,6 @@
 <?php
 $host='localhost';
-<<<<<<< HEAD
-$db = 'mytavli';
-=======
-$db = 'adise20_chess1';
->>>>>>> 6eb3309babc096ae59f1afd99ce85f8ce043ce48
+$db = 'my_tavli';
 require_once "config_local.php";
 
 $user=$DB_USER;
@@ -12,11 +8,7 @@ $pass=$DB_PASS;
 
 
 if(gethostname()=='users.iee.ihu.gr') {
-<<<<<<< HEAD
-	$mysqli = new mysqli($host, $user, $pass, $db,null,'/home/student/it/2012/it123832/mysql/run/mysql.sock');
-=======
-	$mysqli = new mysqli($host, $user, $pass, $db,null,'/home/staff/asidirop/mysql/run/mysql.sock');
->>>>>>> 6eb3309babc096ae59f1afd99ce85f8ce043ce48
+	$mysqli = new mysqli($host, $user, $pass, $db,null,'//home/student/it/2012/it123832/mysql/run/mysql.sock');
 } else {
         $mysqli = new mysqli($host, $user, $pass, $db);
 }
