@@ -1,14 +1,28 @@
-
+/*
+token: Το μοναδικό αναγνωριστικό του παίκτη
+piece_color: Το χρώμα του παίκτη
+isfree: γίνεται 1 όταν πούλι του παίκτη μπαίνει στην περιοχή του αντιπάλου
+*/
 var me = {token: null, piece_color: null, isfree: "0"};
-
+/*
+η κατάσταση του παιχνιδιού
+*/
 var game_status = {};
-
+/*
+η κατάσταση του ταμπλό
+*/
 var board = {};
-
+/*
+η χρονική στιγμή της τελευταίας ενημέρωσης
+*/
 var last_update = new Date().getTime();
-
+/*
+ρυθμιστής της ροής του χρόνου
+*/
 var timer = null;
-
+/*
+Οι ενδείξεις των ζαριών
+*/
 var zari1;
 var zari2;
 /*
@@ -20,17 +34,19 @@ var okMoves = [0,0,0,0];
 Ρυθμίζει την εμφάνιση της ιστοσελίδας με την είσοδο
 */
 $(function () {
-	
+	//δημιουργεί ένα νέο ταμπλό
     draw_empty_board();
-	
+	//γεμίζεί το ταμπλό
     fill_board();
-	
+	//προγραμματίζει το κουμπί της εγγραφής
     $('#tavli_login').click(login_to_game);
-	
+	//προγραμματίζει το κουμπί της εκκαθάρισης του ταμπλό
     $('#tavli_reset').click(reset_board);
+	//προγραμματίζει την αποστολή της κίνησης
 	
 	$('#tavli_end').click(game_status_update_to_null);
     $('#do_move').click(sendMove);
+	//κρύβει το τμήμα της διεπαφής που αφορά την εκτέλεση κινήσεων
     $('#move_div').hide();
 	$('#zari1').hide();
 	$('#zari2').hide();
@@ -41,10 +57,10 @@ $(function () {
     $("#zari3").text("");
     $("#zari4").text("");
     
-
+	//κάνει ενημέρωση της κατάστασης του παιχνιδιού
     game_status_update();
 	
-   
+    //$('#the_move_src').change(update_moves_selector);
 });
 //ελέγχει αν έχει ολοκληρωθεί το παιχνίδι και επιστρέφει το χρώμα του νικητή 
 //ή - αν δεν έχει ολοκληρωθεί
@@ -199,7 +215,7 @@ function zaria() {
 
     return
 }
-
+//δημιουργεί ένα κενό ταμπλό
 function draw_empty_board() {
     var t = '<table id="tavli_table">';
 	t+="<tr>";
@@ -237,20 +253,23 @@ function draw_empty_board() {
     $('#tavli_board').html(t);
     
 }
-
+//γεμίζει το ταμπλό: κάνει κλήση στον server και λαμβάνει
+//την τρέχουσα κατάσταση. Στην συνέχεια ενημερώνει το
+//ταμπλό που φαίνεται στην διεπαφή.
 function fill_board() {
     $.ajax({url: "tavli.php/board/",
         headers: {"X-Token": me.token},
         success: fill_board_by_data});
 }
-
+//επαναρχικοποιεί το ταμπλό και κρύβει τα χειριστήρια των ζαριών και των κινήσεων
 function reset_board() {
     $.ajax({url: "tavli.php/board/", headers: {"X-Token": me.token}, method: 'POST', success: fill_board_by_data});
     $('#move_div').hide();
     $('#game_initializer').show(2000);
 }
 
-
+//το ταμπλό γεμίζει σύμφωνα με τα δεδομένα που 
+//λαμβάνονται από τον server
 function fill_board_by_data(data) {
     board = data;
     for (var i = 0; i < data.length; i++) {
@@ -264,18 +283,18 @@ function fill_board_by_data(data) {
         $('#move_div').hide(1000);
     }
 }
-
+//εγγραφή ενός νέου χρήστη
 function login_to_game() {
-	
+	//πρέπει να δοθεί το όνομα χρήστη
     if ($('#username').val() == '') {
         alert('Δεν έχετε καταχωρήσει όνομα');
         return;
     }
     var p_color = $('#pcolor').val();
-
+	//εμφανίζει ένα αρχικοποιημένο ταμπλό
     draw_empty_board();
     fill_board();
-	
+	//αποστέλλονται τα δεδομένα του νέου χρήστη στον server
     $.ajax({url: "tavli.php/players/" + p_color,
         method: 'PUT',
         dataType: "json",
@@ -285,6 +304,8 @@ function login_to_game() {
         success: login_result,
         error: login_error});
 }
+//με τα δεδομένα που λαμβάνονται από τον server ενημερώνονται οι μεταβλητές του 
+//παιχνιδιού και αρχικοποιείται η διεπαφή
 function login_result(data) {
     me = data[0];
     $('#game_initializer').hide();
@@ -293,10 +314,12 @@ function login_result(data) {
     update_info();
     game_status_update();
 }
+//εμφανίζει μήνυμα σφάλματος εγγραφής στο παιχνίδι
 function login_error(data, y, z, c) {
     var x = data.responseJSON;
     alert(x.errormesg);
 }
+//κλήση στον server για να λάβει την τρέχουσα κατάσταση του παιχνιδιού και να ενημερώσει ανάλογα την διεπαφή
 function game_status_update() {
     clearTimeout(timer);
     $.ajax({url: "tavli.php/status/", method:"POST",success: update_status, headers: {"X-Token": me.token}});
@@ -331,7 +354,7 @@ function update_status(data) {
     game_status = data[0];
     update_info();
     clearTimeout(timer);
-	
+	//τέλος του παιχνιδιού: ανακοινωνεται ο νικητης
     if (game_status.status== 'ended'){
         if (game_status.p_turn == me.piece_color){
             alert("κερδισες");
@@ -341,10 +364,11 @@ function update_status(data) {
             game_status_update_to_null();
         }
     }
-	
+	//η σειρά του παίκτη
     else if (game_status.p_turn == me.piece_color && me.piece_color != null) {
         x = 0;
         // do play
+		
         if (game_stat_old.p_turn != game_status.p_turn) {
             fill_board();
         }
@@ -361,7 +385,7 @@ function update_status(data) {
     }
 
 }
-
+//ενημερώνει το πλαίσιο με τις πληροφορίες του παιχνιδιού
 function update_info() {
     $('#game_info').html("Είμαι ο παίκτης: " + me.piece_color + ". Το ονομά μου είναι " + me.username + ' με αναγνωριστικό:' + me.token + '<br>Η τρέχουσα κατάσταση του παιχνιδιού είναι: ' + (game_status.status=='undefined'?'ΑΚΑΘΟΡΙΣΤΗ':game_status.status) + ', και τώρα παίζει ο:'+ (game_status.p_turn!=null?game_status.p_turn:'ΚΑΝΕΝΑΣ'));
 
@@ -371,7 +395,7 @@ function update_info() {
 function positionsDistance(sf, nf, st, nt) {
     if (sf == st) {
         console.log(nt - nf);
-        return nt - nf;
+        return ((nt - nf>0)?nt-nf:nf-nt);
     } else {
         console.log((12 - nf) + (12 - nt) + 1);
         return (12 - nf) + (12 - nt) + 1;
@@ -531,8 +555,9 @@ function go_move(x) {
     if (positionsDistance(sf, nf, st, nt) === parseInt(zar)) {
         if ((getPositionCurrentColor(sf, nf) === me.piece_color) && ((getPositionCurrentColor(st, nt) == me.piece_color) || (getPositionCurrentColor(st, nt) == "-"))) {
             okMoves[x-1] = 1;
-            decreasePositionContent(sf, nf, sf);
-            increasePositionContent(st, nt, sf);
+			alert("Έγκυρη Κίνηση #"+x+" ("+zar+")");
+            decreasePositionContent(sf, nf, me.piece_color);
+            increasePositionContent(st, nt, me.piece_color);
             if (endOfGame==me.piece_color){
                 alert("Κέρδισες");
             }
@@ -555,11 +580,13 @@ function go_move(x) {
 		for (i=0;i<4;i++){
 			_okMoves+=okMoves[i];
 		}
+		//alert(_okMoves+" "+zari1+" "+zari2);
 		//δεν έχουν παιχτεί όλα τα ζάρια
         if (!(((_okMoves == 2)&&(zari1 != zari2)) || ((_okMoves == 4)&&(zari1 == zari2)))){
+			
 			//ο χρήστης επιβεβαιωνει ότι θα στείλει τις κινήσεις του.
             conf = confirm("Ελέγξτε τις κινήσεις σας. Είναι ολοκληρωμένες;");
-			if (conf == false){
+			if (!conf){
 				return false;
 			}
         }
@@ -631,10 +658,10 @@ function go_move(x) {
         data: parameters,
         headers: {"X-Token": me.token},
         success: move_result});
-   okMoves = 0;
+   okMoves = [0, 0, 0, 0];
    return true;
 }
-
+//μετά την αποστολή στον server γίνεται ενημέρωση της διεπαφής
 function move_result(data) {
     game_status_update_after_play();
     fill_board_by_data(data);
