@@ -1,7 +1,8 @@
 <?php
-
+//επιστρέφει σε json μορφή την τρέχουσα κατάσταση του παιχνιδιού
 function show_status() {
 	global $mysqli;
+	//έλεγχος αν το παιχνίδι έχει εγκαταληφθεί
 	check_abort();
 	$sql = 'select * from game_status';
 	$st = $mysqli->prepare($sql);
@@ -10,29 +11,22 @@ function show_status() {
 	header('Content-type: application/json');
 	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 }
-
+//ελέγχει αν κάποιος παίκτης έχει πολύ ώρα (πάνω από 5 λεπτά) να συμμετάσχει στο παιχνίδι, οπότε το καθιστά εγκαταλελλημένο
 function check_abort() {
 	global $mysqli;
 	$sql = "update game_status set status='aborded', result=if(p_turn='W','B','W'),p_turn=null where p_turn is not null and last_change<(now()-INTERVAL 5 MINUTE) and status='started'";
 	$st = $mysqli->prepare($sql);
 	$r = $st->execute();
-	
-	// Παίρνουμε το game status
 	$sql = "select * from game_status";
 	$st = $mysqli->prepare($sql);
 	$st->execute();
 	$res = $st->get_result();
 	$status = $res->fetch_assoc();
-	
-	// Aν τελικά δούμε ότι το παιχνίδι ειναι εγκαταλελλημένο
 	if ($status['status'] == "aborded"){
-		// Ανανεώνουμε τους παίκτες, αφαιρώντας τους
-		$sql = "update players set username=null, token=null, last_action=null";
+		$sql = "update players set username=null, toke=null, last_action=null";
 		$st->execute();
-		// Διαγράφουμε την κατάσταση του ταμπλώ
 		$sql = 'delete from `board`';
 		$mysqli->query($sql);
-		// Και το επαναφέρουμε στην αρχική του κατάσταση
 		$sql = 'insert into `board` select * from `board_empty`';
 		$mysqli->query($sql);
 	}
@@ -53,13 +47,13 @@ function update_game_status() {
 	$status = read_status();
 	$new_status=null;
 	$new_turn=null;
-	
-	$st3=$mysqli->prepare('select count(*) as aborted from players WHERE last_action< (NOW() - INTERVAL 5 MINUTE)');
+	//γίνεται έλεγχος αν κάποιος παίκτης έχει μείνει ανενεργός για περισσότερο από 15' ώστε να ακυρωθεί το παιχνίδι
+	$st3=$mysqli->prepare('select count(*) as aborted from players WHERE last_action< (NOW() - INTERVAL 15 MINUTE)');
 	$st3->execute();
 	$res3 = $st3->get_result();
 	$aborted = $res3->fetch_assoc()['aborted'];
 	if($aborted>0) {
-		$sql = "UPDATE players SET username=NULL, token=NULL WHERE last_action< (NOW() - INTERVAL 5 MINUTE)";
+		$sql = "UPDATE players SET username=NULL, token=NULL WHERE last_action< (NOW() - INTERVAL 15 MINUTE)";
 		$st2 = $mysqli->prepare($sql);
 		$st2->execute();
 		if($status['status']=='started') {
@@ -74,16 +68,14 @@ function update_game_status() {
 	$res = $st->get_result();
 	$active_players = $res->fetch_assoc()['c'];
 	
-	
+	//ανάλογα με το πόσοι χρήστες είναι εγγεγραμμένοι καθορίζεται η κατάσταση του παιχνιδιού
 	switch($active_players) {
 		case 0: $new_status='not active'; break;
 		case 1: $new_status='initialized'; break;
 		case 2: $new_status='started'; 
-				
 				if($status['p_turn']==null) {
 					$new_turn='W'; // It was not started before...
 				}
-				// Αφού έχει ξεκινήσει το παιχνίδι, παίρνει σειρά μια ο ένας παίκτης, μια ο άλλος
                                 else {
                                     if ($status['p_turn']=='B'){
                                         $status['p_turn']='W';
@@ -96,7 +88,7 @@ function update_game_status() {
                                 }
 				break;
 	}
-
+	//μετά από τους ελέγχους καθορίζεται η κατάσταση που παιχνιδιού και ποιός παίκτης έχει σειρά στην βάση δεδομένων.
 	$sql = 'update game_status set status=?, p_turn=?';
 	$st = $mysqli->prepare($sql);
 	$st->bind_param('ss',$new_status,$new_turn);
@@ -106,18 +98,14 @@ function update_game_status() {
 function update_game_status_for_end($data) {
 	global $mysqli;
 	$new_turn='null';
-	// Σε αυτήν την περίπτωση έχει πατηθεί το κουμπί για να τερματιστεί το παιχνίδι
 	if ($data['new_status']=='_null'){
-			// Θέτουμε το game status σε not active και σβήνουμε σειρά παίκτη και τον τελευταίο που έπαιξε
 			$sql = "update game_status set status='not active', p_turn=null, last_change = null";
 			$st = $mysqli->prepare($sql);
 			$st->execute();
-			// Αρχικοποιούμε τους παίκτες
 			$sql = "update players set username=null, token=null, last_action = null";
 			$st = $mysqli->prepare($sql);
 			$st->execute();
 	}
-	// Ελέγχουμε ποιος θα είναι ο επόμενος που θα παίξει
 	else if ($data['new_status']=='next_play'){
 			if ($data['just_played']=='W'){
 				$sql = "update game_status set  p_turn='B'";
@@ -128,7 +116,6 @@ function update_game_status_for_end($data) {
 			$st = $mysqli->prepare($sql);
 			$st->execute();
     }
-	// Δηλώνουμε ότι το παιχνίδι τελείωσε
     else {
             $sql = "update game_status set status='ended', p_turn=null";
 			$st = $mysqli->prepare($sql);
